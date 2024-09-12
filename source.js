@@ -103,11 +103,12 @@ var SVGtoPDF = function(doc, svg, x, y, options) {
       doc.page.xobjects[group.name] = group.xobj;
       doc.addContent('/' + group.name + ' Do');
     }
-    function docApplyMask(group, clip) {
+    function docApplyMask(group, clip, maskType = 'Luminosity') {
       let name = 'M' + (doc._maskCount = (doc._maskCount || 0) + 1);
+      let maskSubtype = maskType === 'Alpha' ? 'Alpha' : 'Luminosity';
       let gstate = doc.ref({
         Type: 'ExtGState', CA: 1, ca: 1, BM: 'Normal',
-        SMask: {S: 'Luminosity', G: group.xobj, BC: (clip ? [0, 0, 0] : [1, 1, 1])}
+        SMask: {S: maskSubtype, G: group.xobj, BC: (clip ? [0, 0, 0] : [1, 1, 1])}
       });
       gstate.end();
       doc.page.ext_gstates[name] = gstate;
@@ -2243,7 +2244,8 @@ var SVGtoPDF = function(doc, svg, x, y, options) {
         this.drawChildren(false, true);
         doc.restore();
         docEndGroup(group);
-        docApplyMask(group, true);
+        let maskType = this.attr('style')?.includes('mask-type:alpha') ? 'Alpha' : 'Luminosity';
+        docApplyMask(group, true, maskType);
       };
     };
 
