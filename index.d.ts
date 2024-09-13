@@ -36,7 +36,7 @@ declare namespace SVGtoPDF {
             bold: boolean,
             italic: boolean,
             fontOptions: { fauxItalic: boolean; fauxBold: boolean },
-        ) => string
+        ) => string | Buffer
 
         // same as above for the images (for Node.js)
         imageCallback?: (link: string) => string
